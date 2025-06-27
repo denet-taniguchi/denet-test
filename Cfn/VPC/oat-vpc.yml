@@ -1,0 +1,366 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Add VPC Route'
+
+Parameters:
+  Environment:
+    Type: 'String'
+    AllowedValues:
+      - 'uat'
+      - 'uat01'
+      - 'uat02'
+      - 'uat03'
+      - 'stg'
+      - 'str'
+      - 'prd'
+  Service:
+    Type: 'String'
+  VPCCIDR:
+    Type: 'String'
+  PrivateSubnetACIDR:
+    Type: 'String'
+  PrivateSubnetCCIDR:
+    Type: 'String'
+  PrivateSubnetDCIDR:
+    Type: 'String'
+  TransitGWAttachmentSubnetACIDR:
+    Type: 'String'
+  TransitGWAttachmentSubnetCCIDR:
+    Type: 'String'
+  TransitGWAttachmentSubnetDCIDR:
+    Type: 'String'
+
+Resources:
+  EC2VPC01:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: !Sub "${VPCCIDR}"
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      InstanceTenancy: 'default'
+      Tags:
+        - Key: 'Name'
+          Value: !Sub "${Environment}-${Service}-vpc"
+        - Key: 'Environment'
+          Value: !Sub "${Environment}"
+        - Key: 'Service'
+          Value: !Sub "${Service}"
+        - Key: 'Application role'
+          Value: 'N/A'
+        - Key: 'Schedule'
+          Value: 'N/A'
+        - Key: 'Owner'
+          Value: 'infra'
+        - Key: 'Personal data'
+          Value: 'N/A'
+        - Key: 'Browsing'
+          Value: 'private'
+        - Key: 'Monitoring'
+          Value: 'N/A'
+        - Key: 'map-migrated'
+          Value: 'N/A'
+
+  EC2Subnet04:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone: !Select
+        - 0
+        - Fn::GetAZs: !Ref 'AWS::Region'
+      CidrBlock: !Sub "${PrivateSubnetACIDR}"
+      VpcId: !Sub "${EC2VPC01}"
+      Tags:
+        - Key: 'Name'
+          Value: !Sub "${Environment}-${Service}-sbn-pri-a01"
+        - Key: 'Environment'
+          Value: !Sub "${Environment}"
+        - Key: 'Service'
+          Value: !Sub "${Service}"
+        - Key: 'Application role'
+          Value: 'N/A'
+        - Key: 'Schedule'
+          Value: 'N/A'
+        - Key: 'Owner'
+          Value: 'infra'
+        - Key: 'Personal data'
+          Value: 'N/A'
+        - Key: 'Browsing'
+          Value: 'private'
+        - Key: 'Monitoring'
+          Value: 'N/A'
+        - Key: 'map-migrated'
+          Value: 'N/A'
+
+  EC2Subnet05:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone: !Select
+        - 1
+        - Fn::GetAZs: !Ref 'AWS::Region'
+      CidrBlock: !Sub "${PrivateSubnetCCIDR}"
+      VpcId: !Sub "${EC2VPC01}"
+      Tags:
+        - Key: 'Name'
+          Value: !Sub "${Environment}-${Service}-sbn-pri-c01"
+        - Key: 'Environment'
+          Value: !Sub "${Environment}"
+        - Key: 'Service'
+          Value: !Sub "${Service}"
+        - Key: 'Application role'
+          Value: 'N/A'
+        - Key: 'Schedule'
+          Value: 'N/A'
+        - Key: 'Owner'
+          Value: 'infra'
+        - Key: 'Personal data'
+          Value: 'N/A'
+        - Key: 'Browsing'
+          Value: 'private'
+        - Key: 'Monitoring'
+          Value: 'N/A'
+        - Key: 'map-migrated'
+          Value: 'N/A'
+
+  EC2Subnet06:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone: !Select
+        - 2
+        - Fn::GetAZs: !Ref 'AWS::Region'
+      CidrBlock: !Sub "${PrivateSubnetDCIDR}"
+      VpcId: !Sub "${EC2VPC01}"
+      Tags:
+        - Key: 'Name'
+          Value: !Sub "${Environment}-${Service}-sbn-pri-d01"
+        - Key: 'Environment'
+          Value: !Sub "${Environment}"
+        - Key: 'Service'
+          Value: !Sub "${Service}"
+        - Key: 'Application role'
+          Value: 'N/A'
+        - Key: 'Schedule'
+          Value: 'N/A'
+        - Key: 'Owner'
+          Value: 'infra'
+        - Key: 'Personal data'
+          Value: 'N/A'
+        - Key: 'Browsing'
+          Value: 'private'
+        - Key: 'Monitoring'
+          Value: 'N/A'
+        - Key: 'map-migrated'
+          Value: 'N/A'
+
+  EC2Subnet10:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone: !Select
+        - 0
+        - Fn::GetAZs: !Ref 'AWS::Region'
+      CidrBlock: !Sub "${TransitGWAttachmentSubnetACIDR}"
+      VpcId: !Sub "${EC2VPC01}"
+      Tags:
+        - Key: 'Name'
+          Value: !Sub "${Environment}-${Service}-sbn-tra-a01"
+        - Key: 'Environment'
+          Value: !Sub "${Environment}"
+        - Key: 'Service'
+          Value: !Sub "${Service}"
+        - Key: 'Application role'
+          Value: 'N/A'
+        - Key: 'Schedule'
+          Value: 'N/A'
+        - Key: 'Owner'
+          Value: 'infra'
+        - Key: 'Personal data'
+          Value: 'N/A'
+        - Key: 'Browsing'
+          Value: 'private'
+        - Key: 'Monitoring'
+          Value: 'N/A'
+        - Key: 'map-migrated'
+          Value: 'N/A'
+
+  EC2Subnet11:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !Select
+        - 1
+        - Fn::GetAZs: !Ref 'AWS::Region'
+      CidrBlock: !Sub "${TransitGWAttachmentSubnetCCIDR}"
+      VpcId: !Sub "${EC2VPC01}"
+      Tags:
+        - Key: 'Name'
+          Value: !Sub "${Environment}-${Service}-sbn-tra-c01"
+        - Key: 'Environment'
+          Value: !Sub "${Environment}"
+        - Key: 'Service'
+          Value: !Sub "${Service}"
+        - Key: 'Application role'
+          Value: 'N/A'
+        - Key: 'Schedule'
+          Value: 'N/A'
+        - Key: 'Owner'
+          Value: 'infra'
+        - Key: 'Personal data'
+          Value: 'N/A'
+        - Key: 'Browsing'
+          Value: 'private'
+        - Key: 'Monitoring'
+          Value: 'N/A'
+        - Key: 'map-migrated'
+          Value: 'N/A'
+
+  EC2Subnet12:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone: !Select
+        - 2
+        - Fn::GetAZs: !Ref 'AWS::Region'
+      CidrBlock: !Sub "${TransitGWAttachmentSubnetDCIDR}"
+      VpcId: !Sub "${EC2VPC01}"
+      Tags:
+        - Key: 'Name'
+          Value: !Sub "${Environment}-${Service}-sbn-tra-d01"
+        - Key: 'Environment'
+          Value: !Sub "${Environment}"
+        - Key: 'Service'
+          Value: !Sub "${Service}"
+        - Key: 'Application role'
+          Value: 'N/A'
+        - Key: 'Schedule'
+          Value: 'N/A'
+        - Key: 'Owner'
+          Value: 'infra'
+        - Key: 'Personal data'
+          Value: 'N/A'
+        - Key: 'Browsing'
+          Value: 'private'
+        - Key: 'Monitoring'
+          Value: 'N/A'
+        - Key: 'map-migrated'
+          Value: 'N/A'
+
+  EC2RouteTable02:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Sub "${EC2VPC01}"
+      Tags:
+        - Key: 'Name'
+          Value: !Sub "${Environment}-${Service}-rtb-pri-01"
+        - Key: 'Environment'
+          Value: !Sub "${Environment}"
+        - Key: 'Service'
+          Value: !Sub "${Service}"
+        - Key: 'Application role'
+          Value: 'N/A'
+        - Key: 'Schedule'
+          Value: 'N/A'
+        - Key: 'Owner'
+          Value: 'infra'
+        - Key: 'Personal data'
+          Value: 'N/A'
+        - Key: 'Browsing'
+          Value: 'private'
+        - Key: 'Monitoring'
+          Value: 'N/A'
+        - Key: 'map-migrated'
+          Value: 'N/A'
+
+  EC2RouteTable04:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Sub "${EC2VPC01}"
+      Tags:
+        - Key: 'Name'
+          Value: !Sub "${Environment}-${Service}-rtb-tra-01"
+        - Key: 'Environment'
+          Value: !Sub "${Environment}"
+        - Key: 'Service'
+          Value: !Sub "${Service}"
+        - Key: 'Application role'
+          Value: 'N/A'
+        - Key: 'Schedule'
+          Value: 'N/A'
+        - Key: 'Owner'
+          Value: 'infra'
+        - Key: 'Personal data'
+          Value: 'N/A'
+        - Key: 'Browsing'
+          Value: 'private'
+        - Key: 'Monitoring'
+          Value: 'N/A'
+        - Key: 'map-migrated'
+          Value: 'N/A'
+
+  EC2SubnetRouteTableAssociation04:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Sub "${EC2Subnet04}"
+      RouteTableId: !Sub "${EC2RouteTable02}"
+
+  EC2SubnetRouteTableAssociation05:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Sub "${EC2Subnet05}"
+      RouteTableId: !Sub "${EC2RouteTable02}"
+
+  EC2SubnetRouteTableAssociation06:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Sub "${EC2Subnet06}"
+      RouteTableId: !Sub "${EC2RouteTable02}"
+
+  EC2SubnetRouteTableAssociation10:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Sub "${EC2Subnet10}"
+      RouteTableId: !Sub "${EC2RouteTable04}"
+
+  EC2SubnetRouteTableAssociation11:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Sub "${EC2Subnet11}"
+      RouteTableId: !Sub "${EC2RouteTable04}"
+
+  EC2SubnetRouteTableAssociation12:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Sub "${EC2Subnet12}"
+      RouteTableId: !Sub "${EC2RouteTable04}"
+
+Outputs:
+  EC2VPC01:
+    Value: !Ref 'EC2VPC01'
+    Export:
+      Name: !Sub "${Environment}-${Service}-vpc"
+  EC2Subnet04:
+    Value: !Ref 'EC2Subnet04'
+    Export:
+      Name: !Sub "${Environment}-${Service}-sbn-pri-a01"
+  EC2Subnet05:
+    Value: !Ref 'EC2Subnet05'
+    Export:
+      Name: !Sub "${Environment}-${Service}-sbn-pri-c01"
+  EC2Subnet06:
+    Value: !Ref 'EC2Subnet06'
+    Export:
+      Name: !Sub "${Environment}-${Service}-sbn-pri-d01"
+  EC2Subnet10:
+    Value: !Ref 'EC2Subnet10'
+    Export:
+      Name: !Sub "${Environment}-${Service}-sbn-tra-a01"
+  EC2Subnet11:
+    Value: !Ref 'EC2Subnet11'
+    Export:
+      Name: !Sub "${Environment}-${Service}-sbn-tra-c01"
+  EC2Subnet12:
+    Value: !Ref 'EC2Subnet12'
+    Export:
+      Name: !Sub "${Environment}-${Service}-sbn-tra-d01"
+  EC2RouteTable02:
+    Value: !Ref 'EC2RouteTable02'
+    Export:
+      Name: !Sub "${Environment}-${Service}-rtb-pri-01"
+  EC2RouteTable04:
+    Value: !Ref 'EC2RouteTable04'
+    Export:
+      Name: !Sub "${Environment}-${Service}-rtb-tra-01"

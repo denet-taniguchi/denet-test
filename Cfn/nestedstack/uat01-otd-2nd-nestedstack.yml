@@ -1,0 +1,124 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'uat01-otd-2nd-nestedstack'
+
+Parameters:
+  TemplateBucketName:
+    Type: 'String'
+    Default: 'uat01-otd-2nd-infracicd-s3-pipeline-cfn'
+    AllowedValues:
+      # UAT
+      - 'uat01-otd-2nd-infracicd-s3-pipeline-cfn'
+      - 'uat02-otd-2nd-infracicd-s3-pipeline-cfn'
+      - 'uat03-otd-2nd-infracicd-s3-pipeline-cfn'
+      # STG
+      - 'stg-otd-2nd-infracicd-s3-pipeline-cfn'
+      # STR
+      - 'str-otd-2nd-infracicd-s3-pipeline-cfn'
+      # PRD
+      - 'prd-otd-2nd-infracicd-s3-pipeline-cfn'
+  Environment:
+    Type: 'String'
+    Default: 'uat01'
+    AllowedValues:
+      - 'uat01'
+      - 'uat02'
+      - 'uat03'
+      - 'stg'
+      - 'str'
+      - 'prd'
+  Service:
+    Type: 'String'
+    Default: 'uat'
+  VPCCIDR:
+    Type: 'String'
+    Default: '10.16.144.0/20'
+  IsolatedSubnetACIDR:
+    Type: 'String'
+    Default: '10.16.152.0/24'
+  IsolatedSubnetCCIDR:
+    Type: 'String'
+    Default: '10.16.153.0/24'
+  IsolatedSubnetDCIDR:
+    Type: 'String'
+    Default: '10.16.154.0/24'
+  TransitGWAttachmentSubnetACIDR:
+    Type: 'String'
+    Default: '10.16.156.0/28'
+  TransitGWAttachmentSubnetCCIDR:
+    Type: 'String'
+    Default: '10.16.157.0/28'
+  TransitGWAttachmentSubnetDCIDR:
+    Type: 'String'
+    Default: '10.16.158.0/28'
+  TransitGatewayID:
+    Type: 'String'
+    Default: 'tgw-0e42fb31cfea442fc'
+  NifcloudRouteCidr:
+    Type: 'String'
+    Default: '192.168.218.0/24'
+  SatofullAwsAccessCheckRouteCidr:
+    Type: 'String'
+    Default: '10.13.0.0/16'
+  ShiharaiAwsRouteCider:
+    Type: 'String'
+    Default: '10.1.0.0/16'
+  SmahoAwsRouteCider:
+    Type: 'String'
+    Default: '172.16.0.0/14'
+  SatofullAwsPraRouteCider:
+    Type: 'String'
+    Default: '10.18.0.0/16'
+  SatofullAwsEdaRouteCider:
+    Type: 'String'
+    Default: '10.20.0.0/16'
+  SatofullAwsPtlRouteCider:
+    Type: 'String'
+    Default: '10.24.0.0/16'
+  SatofullAwsOpsRouteCider:
+    Type: 'String'
+    Default: '10.32.0.0/16'
+
+Resources:
+# VPC
+  StfVPC:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub "https://${TemplateBucketName}.s3.${AWS::Region}.amazonaws.com/${Environment}/CFn/VPC/oat-vpc.yml"
+      Parameters:
+        Environment: !Sub "${Environment}"
+        Service: !Sub "${Service}"
+        VPCCIDR: !Sub "${VPCCIDR}"
+        IsolatedSubnetACIDR: !Sub "${IsolatedSubnetACIDR}"
+        IsolatedSubnetCCIDR: !Sub "${IsolatedSubnetCCIDR}"
+        IsolatedSubnetDCIDR: !Sub "${IsolatedSubnetDCIDR}"
+        TransitGWAttachmentSubnetACIDR: !Sub "${TransitGWAttachmentSubnetACIDR}"
+        TransitGWAttachmentSubnetCCIDR: !Sub "${TransitGWAttachmentSubnetCCIDR}"
+        TransitGWAttachmentSubnetDCIDR: !Sub "${TransitGWAttachmentSubnetDCIDR}"
+
+  StfTGWAttachmet:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub "https://${TemplateBucketName}.s3.${AWS::Region}.amazonaws.com/${Environment}/CFn/VPC/oat-tgw-attachment.yml"
+      Parameters:
+        Environment: !Sub "${Environment}"
+        Service: !Sub "${Service}"
+        TransitGatewayID: !Sub "${TransitGatewayID}"
+    DependsOn: 'StfVPC'
+
+  StfVPCRoute:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub "https://${TemplateBucketName}.s3.${AWS::Region}.amazonaws.com/${Environment}/CFn/VPC/oat-vpc-route.yml"
+      Parameters:
+        Environment: !Sub "${Environment}"
+        Service: !Sub "${Service}"
+        TransitGatewayID: !Sub "${TransitGatewayID}"
+        NifcloudRouteCidr: !Sub "${NifcloudRouteCidr}"
+        SatofullAwsAccessCheckRouteCidr: !Sub "${SatofullAwsAccessCheckRouteCidr}"
+        ShiharaiAwsRouteCider: !Sub "${ShiharaiAwsRouteCider}"
+        SmahoAwsRouteCider: !Sub "${SmahoAwsRouteCider}"
+        SatofullAwsPraRouteCider: !Sub "${SatofullAwsPraRouteCider}"
+        SatofullAwsEdaRouteCider: !Sub "${SatofullAwsEdaRouteCider}"
+        SatofullAwsPtlRouteCider: !Sub "${SatofullAwsPtlRouteCider}"
+        SatofullAwsOpsRouteCider: !Sub "${SatofullAwsOpsRouteCider}"
+    DependsOn: 'StfTGWAttachmet'
